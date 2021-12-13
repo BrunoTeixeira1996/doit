@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	//	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -27,6 +29,7 @@ type Todo struct {
 	filename string
 	word     string
 	line     int
+	urgency  int
 }
 
 // outputs a Todo struct
@@ -36,10 +39,11 @@ func (todo Todo) output_string() string {
 }
 
 // fills a Todo struct
-func (todo *Todo) fill_struct(path string, line int, word string) {
+func (todo *Todo) fill_struct(path string, line int, urgency int, word string) {
 	todo.filename = path
 	todo.line = line
 	todo.word = word
+	todo.urgency = urgency
 }
 
 // checks if that file has any provided extension
@@ -52,8 +56,33 @@ func check_if_file_has_extension(splited_extensions []string, file_extension str
 	return false
 }
 
+// finds the urgency
+// TODO1 maybe do a regex to validate the TODO text
+// because if i do TODO1 ola2 , 2 is the urgency and thats wrong
+func find_urgency_number(text string) int {
+
+	// validates if TODO ends with a number
+	if value, err := strconv.Atoi(string(text[len(text)-1])); err == nil {
+		return value
+	}
+	return 0
+}
+
+// lists todos by urgency
+func output_todo_by_urgency(todo_slice []Todo) {
+
+}
+
+// lists todos
+func output_todo(todo_slice []Todo) {
+
+	for _, todo := range todo_slice {
+		fmt.Println(todo.output_string())
+	}
+}
+
 // reads files line by line and match TODO keyword
-func walk_on_files(path string, user_file_extension string) {
+func walk_on_files(path string, user_file_extension string, todo_slice *[]Todo) {
 
 	file, err := os.Open(path)
 	if err != nil {
@@ -64,7 +93,6 @@ func walk_on_files(path string, user_file_extension string) {
 	splited_extensions := strings.Split(user_file_extension, ",")
 	file_extension := filepath.Ext(path)
 
-	todo_slice := []Todo{}
 	todo := Todo{}
 	line := 0
 	if check_if_file_has_extension(splited_extensions, file_extension) {
@@ -73,15 +101,11 @@ func walk_on_files(path string, user_file_extension string) {
 		for scanner.Scan() {
 			match := regexp.MustCompile(regex)
 			if match.MatchString(scanner.Text()) {
-				todo.fill_struct(path, line, scanner.Text())
-				todo_slice = append(todo_slice, todo)
+				urgency := find_urgency_number(scanner.Text())
+				todo.fill_struct(path, line, urgency, scanner.Text())
+				*todo_slice = append(*todo_slice, todo)
 			}
 			line++
 		}
-
-	}
-
-	for _, todo := range todo_slice {
-		fmt.Println(todo.output_string())
 	}
 }

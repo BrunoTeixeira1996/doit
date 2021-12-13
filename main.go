@@ -47,7 +47,7 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
-
+	todo_slice := []Todo{}
 	if list_command.Parsed() {
 		if string((*list_text_ptr)[0]) != "." {
 			list_command.PrintDefaults()
@@ -61,10 +61,15 @@ func main() {
 				}
 
 				if !d.IsDir() {
-					walk_on_files(s, *list_text_ptr)
+					walk_on_files(s, *list_text_ptr, &todo_slice)
 				}
 				return nil
 			})
+			//sort slice of todos by urgency
+			sort.SliceStable(todo_slice, func(i, j int) bool {
+				return todo_slice[i].urgency > todo_slice[j].urgency
+			})
+			output_todo(todo_slice)
 		}
 	}
 }
