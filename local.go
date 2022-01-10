@@ -57,8 +57,6 @@ func check_if_file_has_extension(splited_extensions []string, file_extension str
 }
 
 // finds the urgency
-// TODO1 maybe do a regex to validate the TODO text
-// because if i do TODO1 ola2 , 2 is the urgency and thats wrong
 func find_urgency_number(text string) int {
 
 	// validates if TODO ends with a number
