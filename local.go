@@ -66,11 +66,6 @@ func find_urgency_number(text string) int {
 	return 0
 }
 
-// lists todos by urgency
-func output_todo_by_urgency(todo_slice []Todo) {
-
-}
-
 // lists todos
 func output_todo(todo_slice []Todo) {
 
